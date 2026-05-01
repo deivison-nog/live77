@@ -29,6 +29,9 @@ class PlayerActivity : AppCompatActivity() {
     private var libVLC: LibVLC? = null
     private var mediaPlayer: MediaPlayer? = null
     private var streamUrl: String? = null
+    // True while we are intentionally tearing down the player so that the resulting
+    // Stopped event does not trigger an unwanted auto-reconnect.
+    private var isReleasingIntentionally = false
 
     private val hideHandler = Handler(Looper.getMainLooper())
     private val hideOverlayRunnable = Runnable { hideOverlay() }
@@ -108,9 +111,16 @@ class PlayerActivity : AppCompatActivity() {
                             updatePlayPauseIcon(isPlaying = true)
                             showOverlayBriefly()
                         }
-                        MediaPlayer.Event.Paused,
+                        MediaPlayer.Event.Paused -> {
+                            updatePlayPauseIcon(isPlaying = false)
+                        }
                         MediaPlayer.Event.Stopped -> {
                             updatePlayPauseIcon(isPlaying = false)
+                            // Only auto-reconnect if the stream stopped on its own,
+                            // not because we called stop() deliberately.
+                            if (!isReleasingIntentionally) {
+                                scheduleReconnect()
+                            }
                         }
                         MediaPlayer.Event.EncounteredError -> {
                             binding.progressBuffering.visibility = View.GONE
@@ -137,6 +147,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun releasePlayer() {
+        isReleasingIntentionally = true
         hideHandler.removeCallbacks(reconnectRunnable)
         mediaPlayer?.run {
             stop()
@@ -146,6 +157,7 @@ class PlayerActivity : AppCompatActivity() {
         libVLC?.release()
         mediaPlayer = null
         libVLC = null
+        isReleasingIntentionally = false
     }
 
     private fun togglePlayPause() {
