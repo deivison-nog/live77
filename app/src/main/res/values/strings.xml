@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Live 77</string>
+    <string name="hint_login">Login (6 dígitos)</string>
+    <string name="hint_password">Senha (6 dígitos)</string>
+    <string name="btn_login">Entrar</string>
+    <string name="label_channels">Canais</string>
+    <string name="no_channels">Nenhum canal encontrado</string>
+    <string name="btn_retry">Tentar novamente</string>
+    <string name="error_invalid_format">Deve conter exatamente 6 números</string>
+    <string name="error_invalid_credentials">Login ou senha inválidos</string>
+    <string name="error_playback">Erro ao reproduzir: %s</string>
+</resources>
