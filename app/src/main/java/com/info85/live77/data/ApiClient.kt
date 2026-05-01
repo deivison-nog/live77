@@ -1,8 +1,9 @@
 package com.info85.live77.data
 
-import okhttp3.FormBody
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -19,6 +20,8 @@ object ApiClient {
 
     const val API_URL = "http://192.168.1.14/live77/api.php"
 
+    private val JSON_MEDIA_TYPE = "application/json; charset=utf-8".toMediaType()
+
     private val client = OkHttpClient.Builder()
         .connectTimeout(15, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
@@ -27,18 +30,19 @@ object ApiClient {
     /**
      * Authenticates a user against the backend database.
      *
-     * POSTs `action=login`, `login` and `senha` (password) as form fields.
+     * POSTs a JSON body with `action`, `login_code` and `password_code`.
      *
      * @return `true` if the server confirms valid credentials, `false` otherwise.
      * @throws IOException on network or HTTP-level errors.
      */
     @Throws(IOException::class)
     fun login(login: String, senha: String): Boolean {
-        val body = FormBody.Builder()
-            .add("action", "login")
-            .add("login", login)
-            .add("senha", senha)
-            .build()
+        val json = JSONObject().apply {
+            put("action", "login")
+            put("login_code", login)
+            put("password_code", senha)
+        }
+        val body = json.toString().toRequestBody(JSON_MEDIA_TYPE)
 
         val request = Request.Builder()
             .url(API_URL)
