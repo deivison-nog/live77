@@ -33,6 +33,11 @@ function log_action($pdo, $admin_id, $action, $details = null) {
     $stmt->execute([$admin_id, $action, $details]);
 }
 
+function log_app_action($pdo, $user_id, $action, $detail = null) {
+    $stmt = $pdo->prepare("INSERT INTO logs (user_id, action, detail, created_at) VALUES (?, ?, ?, NOW())");
+    $stmt->execute([$user_id, $action, $detail]);
+}
+
 function calculate_status($expires_at, $manual_status = 'active') {
     if ($manual_status !== 'active') {
         return $manual_status;

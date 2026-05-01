@@ -140,7 +140,7 @@ try {
             ");
             $stmt->execute([$user['id'], $token, $tokenExpiresAt]);
 
-            log_action($pdo, 0, 'app_login', 'Login realizado com sucesso via API');
+            log_app_action($pdo, (int)$user['id'], 'app_login', 'Login realizado com sucesso via API');
 
             $pdo->commit();
 
@@ -188,7 +188,7 @@ try {
             $stmt = $pdo->prepare("DELETE FROM app_tokens WHERE token = ?");
             $stmt->execute([$auth['token']]);
 
-            log_action($pdo, 0, 'app_logout', 'Logout realizado via API');
+            log_app_action($pdo, (int)$auth['user_id'], 'app_logout', 'Logout realizado via API');
 
             json_response(true, 'Logout realizado com sucesso.');
             break;
