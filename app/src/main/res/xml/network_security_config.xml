@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Network security config that allows cleartext (HTTP) traffic only for the specific
+    playlist host and common streaming domains while keeping HTTPS enforced everywhere else.
+-->
+<network-security-config>
+    <!-- Allow HTTP for the M3U playlist server -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">ontvadmin.info85.com.br</domain>
+    </domain-config>
+    <!-- Allow HTTP for generic streaming (channels in the playlist may use HTTP streams) -->
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

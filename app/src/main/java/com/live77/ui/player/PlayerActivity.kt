@@ -64,14 +64,21 @@ class PlayerActivity : AppCompatActivity() {
         return true
     }
 
+    private var wasPlayingBeforePause = true
+
     override fun onPause() {
         super.onPause()
+        wasPlayingBeforePause = player?.isPlaying == true
         player?.pause()
     }
 
     override fun onResume() {
         super.onResume()
-        player?.play()
+        // Only resume playback if the player was playing before the activity was paused;
+        // this respects an intentional user pause.
+        if (wasPlayingBeforePause) {
+            player?.play()
+        }
     }
 
     override fun onDestroy() {

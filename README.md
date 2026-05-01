@@ -61,10 +61,7 @@ The URL is configured in `ChannelListViewModel.kt` (`PLAYLIST_URL` constant).
 ### Command line
 
 ```bash
-# Generate the Gradle wrapper (one-time setup, requires Gradle installed locally)
-gradle wrapper --gradle-version=8.6
-
-# Build a debug APK
+# Build a debug APK (Gradle wrapper is already included in the repository)
 ./gradlew assembleDebug
 ```
 
