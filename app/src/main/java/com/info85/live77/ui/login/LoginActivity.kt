@@ -30,16 +30,28 @@ class LoginActivity : AppCompatActivity() {
 
         viewModel.loginResult.observe(this) { result ->
             when (result) {
+                LoginResult.Loading -> {
+                    binding.btnLogin.isEnabled = false
+                    binding.tvError.visibility = View.GONE
+                }
                 LoginResult.Success -> {
+                    binding.btnLogin.isEnabled = true
                     startActivity(Intent(this, ChannelListActivity::class.java))
                     finish()
                 }
                 LoginResult.InvalidFormat -> {
+                    binding.btnLogin.isEnabled = true
                     binding.tilLogin.error = getString(R.string.error_invalid_format)
                     binding.tilPassword.error = getString(R.string.error_invalid_format)
                 }
                 LoginResult.InvalidCredentials -> {
+                    binding.btnLogin.isEnabled = true
                     binding.tvError.text = getString(R.string.error_invalid_credentials)
+                    binding.tvError.visibility = View.VISIBLE
+                }
+                is LoginResult.NetworkError -> {
+                    binding.btnLogin.isEnabled = true
+                    binding.tvError.text = getString(R.string.error_network, result.message)
                     binding.tvError.visibility = View.VISIBLE
                 }
             }

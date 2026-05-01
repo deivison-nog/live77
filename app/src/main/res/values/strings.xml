@@ -8,5 +8,6 @@
     <string name="btn_retry">Tentar novamente</string>
     <string name="error_invalid_format">Deve conter exatamente 6 números</string>
     <string name="error_invalid_credentials">Login ou senha inválidos</string>
+    <string name="error_network">Erro de rede: %s</string>
     <string name="error_playback">Erro ao reproduzir: %s</string>
 </resources>

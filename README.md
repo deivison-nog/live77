@@ -15,16 +15,30 @@ A clean Android app (Kotlin) that displays a login screen and then a clickable l
 
 ---
 
-## Login credentials
+## Backend API
 
-> **Assumption:** no backend authentication server is available.  
-> Credentials are validated locally with the hardcoded values below.  
-> Change `validLogin` / `validPassword` in `LoginViewModel.kt` when a real auth API is ready.
+Authentication is handled by a PHP/MySQL backend. The app POSTs credentials to:
 
-| Field | Value |
-|---|---|
-| Login | `123456` |
-| Password | `123456` |
+```
+http://192.168.1.14/live77/api.php
+```
+
+Expected request (form-encoded POST):
+
+| Field    | Value              |
+|----------|--------------------|
+| `action` | `login`            |
+| `login`  | 6-digit user login |
+| `senha`  | 6-digit password   |
+
+Expected response (JSON):
+
+```json
+{"success": true}   // credentials valid
+{"success": false}  // credentials invalid
+```
+
+To change the API address, update `API_URL` in `app/src/main/java/com/info85/live77/data/ApiClient.kt`.
 
 ---
 
