@@ -89,7 +89,7 @@ class ChannelListActivity : AppCompatActivity() {
         }
         adapter.submitList(filtered)
         binding.recyclerView.visibility = if (filtered.isNotEmpty()) View.VISIBLE else View.GONE
-        if (filtered.isEmpty() && viewModel.error.value == null && !viewModel.loading.value!!) {
+        if (filtered.isEmpty() && viewModel.error.value == null && viewModel.loading.value != true) {
             binding.tvEmpty.visibility = View.VISIBLE
         } else {
             binding.tvEmpty.visibility = View.GONE

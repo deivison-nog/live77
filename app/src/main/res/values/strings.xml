@@ -11,4 +11,6 @@
     <string name="error_invalid_credentials">Login ou senha inválidos</string>
     <string name="error_network">Erro de rede: %s</string>
     <string name="error_playback">Erro ao reproduzir: %s</string>
+    <string name="cd_play_pause">Reproduzir / Pausar</string>
+    <string name="cd_channel_logo">Logo do canal</string>
 </resources>

@@ -40,10 +40,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.4")
     implementation("androidx.activity:activity-ktx:1.9.1")
 
-    // Media3 / ExoPlayer for streaming playback
-    implementation("androidx.media3:media3-exoplayer:1.4.1")
-    implementation("androidx.media3:media3-exoplayer-hls:1.4.1")
-    implementation("androidx.media3:media3-ui:1.4.1")
+    // LibVLC for streaming playback
+    implementation("org.videolan.android:libvlc-all:3.6.0")
+
+    // Glide for loading channel logos
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 
     // Coroutines for async network operations
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")

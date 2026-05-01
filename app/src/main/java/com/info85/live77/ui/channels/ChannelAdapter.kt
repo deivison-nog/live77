@@ -5,6 +5,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.info85.live77.R
 import com.info85.live77.databinding.ItemChannelBinding
 import com.info85.live77.model.Channel
 
@@ -30,6 +33,19 @@ class ChannelAdapter(
         fun bind(channel: Channel) {
             binding.tvChannelName.text = channel.name
             binding.tvChannelGroup.text = channel.group.orEmpty()
+
+            if (!channel.logoUrl.isNullOrBlank()) {
+                Glide.with(binding.ivChannelLogo)
+                    .load(channel.logoUrl)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.ic_channel_placeholder)
+                    .error(R.drawable.ic_channel_placeholder)
+                    .into(binding.ivChannelLogo)
+            } else {
+                Glide.with(binding.ivChannelLogo).clear(binding.ivChannelLogo)
+                binding.ivChannelLogo.setImageResource(R.drawable.ic_channel_placeholder)
+            }
+
             binding.root.setOnClickListener { onChannelClick(channel) }
         }
     }
