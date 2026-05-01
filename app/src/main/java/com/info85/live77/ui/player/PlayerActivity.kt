@@ -22,14 +22,17 @@ class PlayerActivity : AppCompatActivity() {
         const val EXTRA_STREAM_URL = "extra_stream_url"
         const val EXTRA_CHANNEL_NAME = "extra_channel_name"
         private const val CONTROLS_HIDE_DELAY_MS = 3_000L
+        private const val RECONNECT_DELAY_MS = 3_000L
     }
 
     private lateinit var binding: ActivityPlayerBinding
     private var libVLC: LibVLC? = null
     private var mediaPlayer: MediaPlayer? = null
+    private var streamUrl: String? = null
 
     private val hideHandler = Handler(Looper.getMainLooper())
     private val hideOverlayRunnable = Runnable { hideOverlay() }
+    private val reconnectRunnable = Runnable { streamUrl?.let { reinitPlayer(it) } }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +42,7 @@ class PlayerActivity : AppCompatActivity() {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val streamUrl = intent.getStringExtra(EXTRA_STREAM_URL)
+        streamUrl = intent.getStringExtra(EXTRA_STREAM_URL)
         if (streamUrl.isNullOrBlank()) {
             finish()
             return
@@ -50,11 +53,9 @@ class PlayerActivity : AppCompatActivity() {
 
         binding.vlcVideoLayout.setOnClickListener { toggleOverlay() }
         binding.overlayControls.setOnClickListener { toggleOverlay() }
-        binding.btnPlayPause.setOnClickListener {
-            togglePlayPause()
-        }
+        binding.btnPlayPause.setOnClickListener { togglePlayPause() }
 
-        initPlayer(streamUrl)
+        initPlayer(streamUrl!!)
     }
 
     private fun enterFullscreen() {
@@ -67,19 +68,43 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     private fun initPlayer(url: String) {
-        libVLC = LibVLC(this, arrayListOf("--no-drop-late-frames", "--no-skip-frames", "--rtsp-tcp"))
+        binding.tvError.visibility = View.GONE
+        binding.progressBuffering.visibility = View.VISIBLE
+
+        val options = arrayListOf(
+            "--network-caching=3000",
+            "--live-caching=3000",
+            "--clock-jitter=0",
+            "--clock-synchro=0",
+            "--no-drop-late-frames",
+            "--no-skip-frames",
+            "--rtsp-tcp"
+        )
+        libVLC = LibVLC(this, options)
         mediaPlayer = MediaPlayer(libVLC!!).also { player ->
             player.attachViews(binding.vlcVideoLayout, null, false, false)
 
-            val media = Media(libVLC!!, Uri.parse(url))
-            media.setHWDecoderEnabled(true, false)
+            val media = Media(libVLC!!, Uri.parse(url)).apply {
+                setHWDecoderEnabled(true, false)
+                addOption(":network-caching=3000")
+            }
             player.media = media
             media.release()
 
             player.setEventListener { event ->
                 runOnUiThread {
                     when (event.type) {
+                        MediaPlayer.Event.Buffering -> {
+                            val pct = event.buffering
+                            if (pct < 100f) {
+                                binding.progressBuffering.visibility = View.VISIBLE
+                            } else {
+                                binding.progressBuffering.visibility = View.GONE
+                            }
+                        }
                         MediaPlayer.Event.Playing -> {
+                            binding.progressBuffering.visibility = View.GONE
+                            binding.tvError.visibility = View.GONE
                             updatePlayPauseIcon(isPlaying = true)
                             showOverlayBriefly()
                         }
@@ -88,8 +113,10 @@ class PlayerActivity : AppCompatActivity() {
                             updatePlayPauseIcon(isPlaying = false)
                         }
                         MediaPlayer.Event.EncounteredError -> {
+                            binding.progressBuffering.visibility = View.GONE
                             binding.tvError.text = getString(R.string.error_playback, "")
                             binding.tvError.visibility = View.VISIBLE
+                            scheduleReconnect()
                         }
                     }
                 }
@@ -99,11 +126,42 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Fully releases the current player resources and reinitialises with the same URL.
+     * Live HLS streams cannot be paused and resumed — the server playlist advances while
+     * paused, so a clean restart is the only reliable way to unfreeze playback.
+     */
+    private fun reinitPlayer(url: String) {
+        releasePlayer()
+        initPlayer(url)
+    }
+
+    private fun releasePlayer() {
+        hideHandler.removeCallbacks(reconnectRunnable)
+        mediaPlayer?.run {
+            stop()
+            detachViews()
+            release()
+        }
+        libVLC?.release()
+        mediaPlayer = null
+        libVLC = null
+    }
+
     private fun togglePlayPause() {
-        mediaPlayer?.let { player ->
-            if (player.isPlaying) player.pause() else player.play()
+        val player = mediaPlayer ?: return
+        if (player.isPlaying) {
+            player.pause()
+        } else {
+            // For live streams a stopped/ended player needs a full reinit, not just play()
+            streamUrl?.let { reinitPlayer(it) }
         }
         scheduleHideOverlay()
+    }
+
+    private fun scheduleReconnect() {
+        hideHandler.removeCallbacks(reconnectRunnable)
+        hideHandler.postDelayed(reconnectRunnable, RECONNECT_DELAY_MS)
     }
 
     private fun updatePlayPauseIcon(isPlaying: Boolean) {
@@ -138,21 +196,21 @@ class PlayerActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         enterFullscreen()
-        mediaPlayer?.play()
+        // Always do a full reinit on resume: live HLS playlists advance while the
+        // app is in the background, so pause→play produces 0 decoded frames.
+        streamUrl?.let { reinitPlayer(it) }
     }
 
     override fun onPause() {
         super.onPause()
-        mediaPlayer?.pause()
+        hideHandler.removeCallbacks(hideOverlayRunnable)
+        releasePlayer()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         hideHandler.removeCallbacks(hideOverlayRunnable)
-        mediaPlayer?.detachViews()
-        mediaPlayer?.release()
-        libVLC?.release()
-        mediaPlayer = null
-        libVLC = null
+        hideHandler.removeCallbacks(reconnectRunnable)
+        releasePlayer()
     }
 }
