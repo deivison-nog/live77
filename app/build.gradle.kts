@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.live77"
+    namespace = "com.info85.live77"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.live77"
+        applicationId = "com.info85.live77"
         minSdk = 26
         targetSdk = 34
         versionCode = 1

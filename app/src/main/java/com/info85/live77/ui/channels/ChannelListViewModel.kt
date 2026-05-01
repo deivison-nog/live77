@@ -1,11 +1,11 @@
-package com.live77.ui.channels
+package com.info85.live77.ui.channels
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.live77.data.M3uParser
-import com.live77.model.Channel
+import com.info85.live77.data.M3uParser
+import com.info85.live77.model.Channel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

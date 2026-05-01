@@ -1,4 +1,4 @@
-package com.live77.ui.player
+package com.info85.live77.ui.player
 
 import android.os.Bundle
 import android.view.View
@@ -8,8 +8,8 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
-import com.live77.R
-import com.live77.databinding.ActivityPlayerBinding
+import com.info85.live77.R
+import com.info85.live77.databinding.ActivityPlayerBinding
 
 class PlayerActivity : AppCompatActivity() {
 

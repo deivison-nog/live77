@@ -1,4 +1,4 @@
-package com.live77.ui.login
+package com.info85.live77.ui.login
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

@@ -1,12 +1,12 @@
-package com.live77.ui.channels
+package com.info85.live77.ui.channels
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.live77.databinding.ItemChannelBinding
-import com.live77.model.Channel
+import com.info85.live77.databinding.ItemChannelBinding
+import com.info85.live77.model.Channel
 
 class ChannelAdapter(
     private val onChannelClick: (Channel) -> Unit

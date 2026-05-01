@@ -1,4 +1,4 @@
-package com.live77.ui.channels
+package com.info85.live77.ui.channels
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,9 +6,9 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.live77.R
-import com.live77.databinding.ActivityChannelListBinding
-import com.live77.ui.player.PlayerActivity
+import com.info85.live77.R
+import com.info85.live77.databinding.ActivityChannelListBinding
+import com.info85.live77.ui.player.PlayerActivity
 
 class ChannelListActivity : AppCompatActivity() {
 

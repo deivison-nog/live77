@@ -1,6 +1,6 @@
-package com.live77.data
+package com.info85.live77.data
 
-import com.live77.model.Channel
+import com.info85.live77.model.Channel
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.IOException

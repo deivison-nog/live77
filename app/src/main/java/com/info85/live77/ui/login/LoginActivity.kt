@@ -1,13 +1,13 @@
-package com.live77.ui.login
+package com.info85.live77.ui.login
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.live77.R
-import com.live77.databinding.ActivityLoginBinding
-import com.live77.ui.channels.ChannelListActivity
+import com.info85.live77.R
+import com.info85.live77.databinding.ActivityLoginBinding
+import com.info85.live77.ui.channels.ChannelListActivity
 
 class LoginActivity : AppCompatActivity() {
 
