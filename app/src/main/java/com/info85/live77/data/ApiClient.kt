@@ -51,12 +51,17 @@ object ApiClient {
             .build()
 
         val response = client.newCall(request).execute()
+        val bodyStr = response.body?.string() ?: ""
+
         if (!response.isSuccessful) {
-            throw IOException("HTTP ${response.code}: ${response.message}")
+            val serverMsg = runCatching {
+                JSONObject(bodyStr).optString("message", "")
+            }.getOrDefault("")
+            val detail = if (serverMsg.isNotEmpty()) serverMsg else bodyStr.take(200)
+            throw IOException("HTTP ${response.code}: $detail")
         }
 
-        val bodyStr = response.body?.string()
-            ?: throw IOException("Resposta vazia do servidor")
+        if (bodyStr.isEmpty()) throw IOException("Resposta vazia do servidor")
 
         return JSONObject(bodyStr).optBoolean("success", false)
     }
