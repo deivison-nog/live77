@@ -30,7 +30,9 @@ object ApiClient {
     /**
      * Authenticates a user against the backend database.
      *
-     * POSTs a JSON body with `action`, `login_code` and `password_code`.
+     * POSTs a JSON body with `login_code` and `password_code` to `$API_URL?action=login`.
+     * The `action` parameter must be in the query string because the server reads it from
+     * `$_GET`/`$_POST`, not from the JSON body.
      *
      * @return `true` if the server confirms valid credentials, `false` otherwise.
      * @throws IOException on network or HTTP-level errors.
@@ -38,14 +40,13 @@ object ApiClient {
     @Throws(IOException::class)
     fun login(login: String, senha: String): Boolean {
         val json = JSONObject().apply {
-            put("action", "login")
             put("login_code", login)
             put("password_code", senha)
         }
         val body = json.toString().toRequestBody(JSON_MEDIA_TYPE)
 
         val request = Request.Builder()
-            .url(API_URL)
+            .url("$API_URL?action=login")
             .post(body)
             .build()
 

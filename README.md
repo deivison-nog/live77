@@ -20,14 +20,13 @@ A clean Android app (Kotlin) that displays a login screen and then a clickable l
 Authentication is handled by a PHP/MySQL backend. The app POSTs credentials to:
 
 ```
-http://192.168.1.14/live77/api.php
+http://192.168.1.14/live77/api.php?action=login
 ```
 
-Expected request (JSON POST body):
+The `action` is passed as a **query parameter**. The credentials are sent as a **JSON body**:
 
 | Field           | Value              |
 |-----------------|--------------------|
-| `action`        | `login`            |
 | `login_code`    | 6-digit user login |
 | `password_code` | 6-digit password   |
 
