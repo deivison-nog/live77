@@ -34,10 +34,7 @@ class PlayerActivity : AppCompatActivity() {
         }
 
         val channelName = intent.getStringExtra(EXTRA_CHANNEL_NAME) ?: getString(R.string.app_name)
-        supportActionBar?.apply {
-            title = channelName
-            setDisplayHomeAsUpEnabled(true)
-        }
+        binding.tvChannelName.text = channelName
 
         initPlayer(streamUrl)
     }
@@ -57,11 +54,6 @@ class PlayerActivity : AppCompatActivity() {
                 }
             })
         }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressedDispatcher.onBackPressed()
-        return true
     }
 
     private var wasPlayingBeforePause = true

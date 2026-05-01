@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.info85.live77.R
 import com.info85.live77.databinding.ActivityChannelListBinding
+import com.info85.live77.model.Channel
 import com.info85.live77.ui.player.PlayerActivity
 
 class ChannelListActivity : AppCompatActivity() {
@@ -15,13 +17,12 @@ class ChannelListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityChannelListBinding
     private val viewModel: ChannelListViewModel by viewModels()
     private lateinit var adapter: ChannelAdapter
+    private var allChannels: List<Channel> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChannelListBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        supportActionBar?.title = getString(R.string.label_channels)
 
         adapter = ChannelAdapter { channel ->
             startActivity(
@@ -39,9 +40,17 @@ class ChannelListActivity : AppCompatActivity() {
             viewModel.loadChannels()
         }
 
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = false
+            override fun onQueryTextChange(newText: String?): Boolean {
+                applyFilter(newText.orEmpty())
+                return true
+            }
+        })
+
         viewModel.channels.observe(this) { channels ->
-            adapter.submitList(channels)
-            binding.recyclerView.visibility = if (channels.isNotEmpty()) View.VISIBLE else View.GONE
+            allChannels = channels
+            applyFilter(binding.searchView.query?.toString().orEmpty())
         }
 
         viewModel.loading.observe(this) { loading ->
@@ -51,7 +60,6 @@ class ChannelListActivity : AppCompatActivity() {
                 binding.btnRetry.visibility = View.GONE
                 binding.tvEmpty.visibility = View.GONE
             } else {
-                // Show empty state only when done loading and no channels/error
                 val hasChannels = (viewModel.channels.value?.isNotEmpty()) == true
                 val hasError = viewModel.error.value != null
                 binding.tvEmpty.visibility =
@@ -71,5 +79,20 @@ class ChannelListActivity : AppCompatActivity() {
         }
 
         viewModel.loadChannels()
+    }
+
+    private fun applyFilter(query: String) {
+        val filtered = if (query.isBlank()) {
+            allChannels
+        } else {
+            allChannels.filter { it.name.contains(query, ignoreCase = true) }
+        }
+        adapter.submitList(filtered)
+        binding.recyclerView.visibility = if (filtered.isNotEmpty()) View.VISIBLE else View.GONE
+        if (filtered.isEmpty() && viewModel.error.value == null && !viewModel.loading.value!!) {
+            binding.tvEmpty.visibility = View.VISIBLE
+        } else {
+            binding.tvEmpty.visibility = View.GONE
+        }
     }
 }

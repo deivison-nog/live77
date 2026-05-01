@@ -4,6 +4,7 @@
     <string name="hint_password">Senha (6 dígitos)</string>
     <string name="btn_login">Entrar</string>
     <string name="label_channels">Canais</string>
+    <string name="hint_search">Buscar canal</string>
     <string name="no_channels">Nenhum canal encontrado</string>
     <string name="btn_retry">Tentar novamente</string>
     <string name="error_invalid_format">Deve conter exatamente 6 números</string>
