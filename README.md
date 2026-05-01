@@ -40,6 +40,26 @@ Expected response (JSON):
 
 To change the API address, update `API_URL` in `app/src/main/java/com/info85/live77/data/ApiClient.kt`.
 
+### Deploying the backend
+
+The file `api.php` (repository root) is the ready-to-deploy PHP script. Copy it to your web server:
+
+```
+/var/www/html/live77/api.php   (Apache / XAMPP)
+```
+
+Before deploying, open `api.php` and set the correct database credentials:
+
+```php
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'live77_admin');
+define('DB_USER', 'root');   // your MySQL user
+define('DB_PASS', '');       // your MySQL password
+```
+
+**Password storage:** by default the script compares `SHA-256(senha)` against the `senha` column in the `users` table.  
+If your passwords are stored in plain text, change `$hash = hash('sha256', $senha);` to just `$hash = $senha;` in `api.php`.
+
 ---
 
 ## Playlist URL
